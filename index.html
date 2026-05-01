@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,user-scalable=no">
+<title>AL AMEEN ERP</title>
+
+<!-- PWA Meta Tags -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#042C53">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AL AMEEN ERP">
+<meta name="application-name" content="AL AMEEN ERP">
+<meta name="msapplication-TileColor" content="#042C53">
+<meta name="msapplication-TileImage" content="icons/icon-144.png">
+<meta name="description" content="نظام محاسبي متكامل متعدد الشركات">
+
+<!-- Apple Touch Icons -->
+<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+
+<!-- Styles -->
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="auth.css">
+
+<style>
+  /* منع تحديد النص في واجهة التطبيق */
+  .sb, .topbar, .ni, .btn { user-select: none; -webkit-user-select: none; }
+  /* PWA standalone mode */
+  @media (display-mode: standalone) {
+    .topbar { padding-top: max(0px, env(safe-area-inset-top)); height: calc(47px + env(safe-area-inset-top)); }
+    #screen-login { padding-top: env(safe-area-inset-top); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     GLOBAL TOAST
+═══════════════════════════════════════ -->
+<div id="global-toast"></div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 1: تسجيل الدخول
+═══════════════════════════════════════ -->
+<div id="screen-login">
+  <div class="login-box">
+    <div class="login-logo-placeholder" id="login-logo-wrap">
+      <span id="login-logo-letter">A</span>
+    </div>
+    <div class="login-title">AL AMEEN ERP</div>
+    <div class="login-sub">ACCOUNTING & AUDITING SYSTEM</div>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-field">
+      <label>اسم المستخدم</label>
+      <input type="text" id="login-user" placeholder="admin" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>كلمة المرور</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" onclick="doLogin()">تسجيل الدخول</button>
+    <div class="login-footer">AL AMEEN ERP v2.0 — Multi-Company Edition</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 2: اختيار الشركة
+═══════════════════════════════════════ -->
+<div id="screen-company">
+  <div class="company-screen-wrap">
+    <div class="company-screen-header">
+      <img id="comp-screen-logo" src="" alt="" onerror="this.style.display='none'">
+      <span id="company-welcome">مرحباً</span>
+      <div class="company-screen-sub">اختر الشركة للمتابعة</div>
+    </div>
+    <div class="company-list-title">
+      <span>الشركات المتاحة</span>
+      <span id="admin-new-corp-btn" style="display:none">
+        <button class="btn btn-p" onclick="openNewCompanyModal()" style="font-size:11px;padding:4px 10px">+ شركة جديدة</button>
+      </span>
+    </div>
+    <div id="company-list"></div>
+    <div class="company-actions">
+      <button class="logout-btn" onclick="doLogout()">← تسجيل الخروج</button>
+      <span id="admin-panel-btn" style="display:none">
+        <button class="logout-btn" onclick="showAdminFromCompanyScreen()">⚙ إدارة النظام</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 3: التطبيق الرئيسي
+═══════════════════════════════════════ -->
+<div id="screen-app" style="display:none;width:100%;height:100vh">
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="sb-logo">
+    <img id="sb-logo" src="" alt="" onerror="this.style.display='none'">
+    <div class="ln" id="sb-logo-name">AL AMEEN ERP</div>
+    <div class="ls">ACCOUNTING & AUDITING</div>
+  </div>
+  <div class="sb-nav">
+    <div class="nl">الرئيسية</div>
+    <div class="ni on" onclick="go('dash',this)">◈ لوحة التحكم</div>
+    <div class="ni" onclick="go('voucher',this)">◈ الصندوق — سند صرف / قبض</div>
+    <div class="nl">المحاسبة</div>
+    <div class="ni" onclick="go('coa',this)">⊞ شجرة الحسابات</div>
+    <div class="ni" onclick="go('journal',this)">≡ دفتر اليومية</div>
+    <div class="ni" onclick="go('ledger',this)">◻ دفتر الأستاذ</div>
+    <div class="nl">التقارير</div>
+    <div class="ni" onclick="go('tb',this)">◫ ميزان المراجعة</div>
+    <div class="ni" onclick="go('pl',this)">◫ قائمة الدخل</div>
+    <div class="ni" onclick="go('bs',this)">◫ الميزانية العمومية</div>
+    <div class="ni" onclick="go('stmt_client',this)">◫ كشف حساب عميل</div>
+    <div class="ni" onclick="go('stmt_supp',this)">◫ كشف حساب مورد</div>
+    <div class="nl">المعاملات</div>
+    <div class="ni" onclick="go('sales',this)">◻ المبيعات</div>
+    <div class="ni" onclick="go('purchases',this)">◈ المشتريات</div>
+    <div class="nl">الكيانات</div>
+    <div class="ni" onclick="go('clients',this)">◉ العملاء</div>
+    <div class="ni" onclick="go('supp',this)">◉ الموردون</div>
+    <div class="ni" onclick="go('stock',this)">▦ المخزون</div>
+    <div class="nl admin-only">الإدارة</div>
+    <div class="ni admin-only" onclick="go('admin',this)">⚙ إدارة النظام</div>
+  </div>
+  <div class="sb-footer">
+    <div class="ni-settings" onclick="go('settings',this)">⚙ إعدادات الشركة</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <img id="tb-logo" src="" alt="" onerror="this.style.display='none'" style="cursor:pointer" onclick="doSwitchCompany()">
+      <div class="ptitle" id="ptitle">لوحة التحكم</div>
+    </div>
+    <div class="tacts">
+      <span class="saved-badge" id="saved-badge">محفوظ ✓</span>
+      <span class="offline-badge">غير متصل</span>
+      <div class="corp-indicator" id="corp-indicator"></div>
+      <span id="tb-date" style="font-size:11px;color:#64748B"></span>
+      <button class="btn" onclick="openModal('modal-journal')">+ قيد</button>
+      <button class="btn btn-p" onclick="openModal('modal-inv')">+ فاتورة</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="pg-dash" class="pg on">
+      <div class="wbanner">
+        <img id="wb-logo" src="" alt="" onerror="this.style.display='none'">
+        <div>
+          <div class="wt1" id="dash-corp-name">AL AMEEN ERP</div>
+          <div class="wt2">نظام محاسبي متكامل متعدد الشركات — شجرة حسابات — ترحيل تلقائي — كشوف حسابات<br>جميع البيانات محفوظة ومنفصلة لكل شركة</div>
+        </div>
+      </div>
+      <div class="sg" id="d-stats"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+        <div class="card"><div class="ch"><div class="ct">آخر القيود</div><button class="btn" style="font-size:11px" onclick="go('journal',null)">عرض الكل</button></div><div id="d-jlist"></div></div>
+        <div class="card"><div class="ch"><div class="ct">أرصدة رئيسية</div><button class="btn" style="font-size:11px" onclick="go('coa',null)">شجرة الحسابات</button></div><div id="d-bal"></div></div>
+      </div>
+    </div>
+
+    <!-- VOUCHER -->
+    <div id="pg-voucher" class="pg">
+      <div class="card">
+        <div class="ch"><div class="ct">سند صندوق</div><div id="v-box-bal" style="font-size:13px;font-weight:700;color:#185FA5"></div></div>
+        <div class="v-tabs">
+          <div class="v-tab pay on" id="vtab-pay" onclick="setVType('pay')">▼ سند صرف (مدفوعات)</div>
+          <div class="v-tab rcv" id="vtab-rcv" onclick="setVType('rcv')">▲ سند قبض (مقبوضات)</div>
+        </div>
+        <div class="fgrid" style="margin-bottom:10px">
+          <div class="fg"><label>التاريخ</label><input type="date" id="v-date"></div>
+          <div class="fg"><label>رقم السند</label><input id="v-num" readonly style="background:#F8FAFC;color:#64748B"></div>
+          <div class="fg"><label>الحساب المقابل</label><select id="v-acc" onchange="updateVPreview()"></select></div>
+          <div class="fg"><label>المبلغ (ج)</label><input type="number" id="v-amount" placeholder="0" min="0" oninput="updateVPreview()"></div>
+          <div class="fg full"><label>البيان</label><input id="v-desc" placeholder="سبب الصرف أو القبض..."></div>
+        </div>
+        <div id="v-preview" style="font-size:11px;padding:7px 10px;background:#EFF6FF;border-radius:7px;color:#1D4ED8;margin-bottom:10px;border:1px solid #BFDBFE"></div>
+        <div style="display:flex;gap:7px">
+          <button class="btn btn-p" id="v-btn" onclick="postVoucher()">إصدار سند صرف</button>
+          <button class="btn" onclick="clearVoucher()">مسح</button>
+        </div>
+      </div>
+      <div class="card"><div class="ch"><div class="ct">سجل السندات</div></div><div id="v-list"></div></div>
+    </div>
+
+    <!-- COA -->
+    <div id="pg-coa" class="pg">
+      <div class="card">
+        <div class="ch">
+          <div class="ct">شجرة الحسابات الكاملة</div>
+          <div class="tacts">
+            <input id="coa-q" placeholder="بحث في الحسابات..." style="width:170px" oninput="renderCOA()">
+            <button class="btn" onclick="expandAll()">فتح الكل</button>
+            <button class="btn" onclick="collapseAll()">طي الكل</button>
+            <button class="btn btn-p" onclick="openAccModal()">+ حساب جديد</button>
+          </div>
+        </div>
+        <div id="coa-tree"></div>
+      </div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div id="pg-journal" class="pg">
+      <div class="card"><div class="ch"><div class="ct">دفتر اليومية</div><div class="tacts"><input id="j-q" placeholder="بحث..." style="width:150px" oninput="renderJList()"><button class="btn btn-p" onclick="openModal('modal-journal')">+ قيد جديد</button></div></div><div id="j-list"></div></div>
+    </div>
+
+    <!-- LEDGER -->
+    <div id="pg-ledger" class="pg">
+      <div class="card"><div class="ch"><div class="ct">دفتر الأستاذ</div><select id="ledger-sel" style="width:260px" onchange="renderLedger()"></select></div><div id="ledger-body"></div></div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="pg-tb" class="pg"><div class="card"><div class="ch"><div class="ct">ميزان المراجعة</div></div><div id="tb-body"></div></div></div>
+    <div id="pg-pl" class="pg"><div class="card"><div class="ch"><div class="ct">قائمة الدخل</div></div><div id="pl-body"></div></div></div>
+    <div id="pg-bs" class="pg"><div class="card"><div class="ch"><div class="ct">الميزانية العمومية</div></div><div id="bs-body"></div></div></div>
+
+    <!-- كشف عميل -->
+    <div id="pg-stmt_client" class="pg">
+      <div class="card">
+        <div class="ch"><div class="ct">كشف حساب عميل</div></div>
+        <div class="fgrid" style="margin-bottom:10px">
+          <div class="fg"><label>العميل</label><select id="stmt-client"></select></div>
+          <div class="fg"></div>
+          <div class="fg"><label>من تاريخ</label><input type="date" id="stmt-from"></div>
+          <div class="fg"><label>إلى تاريخ</label><input type="date" id="stmt-to"></div>
+          <div class="fg full"><button class="btn btn-p" onclick="renderClientStatement()">عرض الكشف</button></div>
+        </div>
+        <div id="stmt-body"><div class="empty">اختر عميلاً وحدد الفترة</div></div>
+      </div>
+    </div>
+
+    <!-- كشف مورد -->
+    <div id="pg-stmt_supp" class="pg">
+      <div class="card">
+        <div class="ch"><div class="ct">كشف حساب مورد</div></div>
+        <div class="fgrid" style="margin-bottom:10px">
+          <div class="fg"><label>المورد</label><select id="sstmt-supp"></select></div>
+          <div class="fg"></div>
+          <div class="fg"><label>من تاريخ</label><input type="date" id="sstmt-from"></div>
+          <div class="fg"><label>إلى تاريخ</label><input type="date" id="sstmt-to"></div>
+          <div class="fg full"><button class="btn btn-p" onclick="renderSupplierStatement()">عرض الكشف</button></div>
+        </div>
+        <div id="sstmt-body"><div class="empty">اختر مورداً وحدد الفترة</div></div>
+      </div>
+    </div>
+
+    <!-- SALES -->
+    <div id="pg-sales" class="pg">
+      <div class="card"><div class="ch"><div class="ct">فواتير المبيعات</div><button class="btn btn-p" onclick="openModal('modal-inv')">+ فاتورة مبيعات</button></div><div id="inv-body"></div></div>
+    </div>
+
+    <!-- PURCHASES -->
+    <div id="pg-purchases" class="pg">
+      <div class="card"><div class="ch"><div class="ct">فواتير المشتريات</div><button class="btn btn-p" onclick="openModal('modal-purch')">+ فاتورة شراء</button></div><div id="purch-body"></div></div>
+    </div>
+
+    <!-- CLIENTS / SUPPLIERS / STOCK -->
+    <div id="pg-clients" class="pg"><div class="card"><div class="ch"><div class="ct">العملاء</div><button class="btn btn-p" onclick="openModal('modal-client')">+ عميل جديد</button></div><div id="clients-body"></div></div></div>
+    <div id="pg-supp" class="pg"><div class="card"><div class="ch"><div class="ct">الموردون</div><button class="btn btn-p" onclick="openModal('modal-supp')">+ مورد جديد</button></div><div id="supp-body"></div></div></div>
+    <div id="pg-stock" class="pg"><div class="card"><div class="ch"><div class="ct">المنتجات والمخزون</div><button class="btn btn-p" onclick="openModal('modal-product')">+ منتج جديد</button></div><div id="stock-body"></div></div></div>
+
+    <!-- SETTINGS -->
+    <div id="pg-settings" class="pg">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card">
+          <div class="settings-title">🏢 بيانات الشركة</div>
+          <div style="margin-bottom:12px">
+            <label style="font-size:11px;font-weight:700;color:#64748B">شعار الشركة</label>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:5px">
+              <img id="set-logo-preview" src="" style="width:60px;height:60px;object-fit:contain;border-radius:8px;border:1px solid #E2E8F0;display:none">
+              <label class="btn btn-warn" style="cursor:pointer;font-size:11px">رفع شعار
+                <input type="file" accept="image/*" style="display:none" onchange="handleSettingsLogo(this)">
+              </label>
+              <input type="hidden" id="set-logo-data">
+              <span style="font-size:10px;color:#94A3B8">PNG/JPG — أقل من 500KB</span>
+            </div>
+          </div>
+          <div class="fgrid">
+            <div class="fg"><label>اسم الشركة (إنجليزي)</label><input id="set-company"></div>
+            <div class="fg"><label>اسم الشركة (عربي)</label><input id="set-company-ar"></div>
+            <div class="fg full"><label>العنوان</label><input id="set-address"></div>
+            <div class="fg"><label>الهاتف</label><input id="set-phone"></div>
+            <div class="fg"><label>البريد الإلكتروني</label><input id="set-email"></div>
+            <div class="fg"><label>الرقم الضريبي</label><input id="set-taxnum"></div>
+            <div class="fg"><label>نسبة الضريبة %</label><input id="set-taxrate" type="number" value="14"></div>
+            <div class="fg"><label>العملة</label><input id="set-currency" placeholder="ج.م"></div>
+            <div class="fg full"><label>ملاحظة الفاتورة</label><input id="set-invnote"></div>
+          </div>
+          <button class="btn btn-p" onclick="saveSettings()">حفظ الإعدادات</button>
+        </div>
+        <div>
+          <div class="card">
+            <div class="settings-title">💾 النسخ الاحتياطي</div>
+            <div class="settings-row">
+              <div><div class="settings-label">تصدير بيانات الشركة</div><div class="settings-desc">ملف ALAMEEN مع اسم الشركة والتاريخ</div></div>
+              <button class="btn btn-g" onclick="exportData()">⬇ تصدير</button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">استيراد البيانات</div><div class="settings-desc">تحميل من ملف ALAMEEN سابق</div></div>
+              <label class="btn btn-warn" style="cursor:pointer">⬆ استيراد<input type="file" accept=".json" style="display:none" onchange="importData(this.files[0])"></label>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">التخزين</div><div class="settings-desc" id="storage-info">—</div></div>
+              <button class="btn" onclick="renderSettings()">تحديث</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="settings-title">📊 إحصائيات الشركة</div>
+            <div class="settings-row"><div class="settings-label">الحسابات</div><span id="stat-accs" style="font-weight:700;color:#185FA5">—</span></div>
+            <div class="settings-row"><div class="settings-label">القيود</div><span id="stat-jvs" style="font-weight:700;color:#185FA5">—</span></div>
+            <div class="settings-row"><div class="settings-label">الفواتير</div><span id="stat-invs" style="font-weight:700;color:#15803D">—</span></div>
+            <div class="settings-row"><div class="settings-label">العملاء</div><span id="stat-clients" style="font-weight:700;color:#7C3AED">—</span></div>
+            <div class="settings-row"><div class="settings-label">الموردون</div><span id="stat-supps" style="font-weight:700;color:#A16207">—</span></div>
+          </div>
+          <div class="card" style="border:1px solid #FEE2E2">
+            <div class="settings-title" style="color:#DC2626">⚠ منطقة الخطر</div>
+            <div class="settings-row">
+              <div><div class="settings-label" style="color:#DC2626">مسح بيانات هذه الشركة</div><div class="settings-desc">لا يمكن التراجع</div></div>
+              <button class="btn btn-del" onclick="clearAllData()">مسح</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="pg-admin" class="pg admin-only">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+
+        <!-- إدارة الشركات -->
+        <div class="card">
+          <div class="ch">
+            <div class="ct">🏢 إدارة الشركات</div>
+            <button class="btn btn-p" onclick="document.getElementById('nc-edit-id').value='';openNewCompanyModal()">+ شركة جديدة</button>
+          </div>
+          <div id="corps-list"></div>
+        </div>
+
+        <!-- إدارة المستخدمين -->
+        <div class="card">
+          <div class="ct" style="margin-bottom:12px">👤 إدارة المستخدمين</div>
+          <div id="users-list" style="margin-bottom:14px"></div>
+          <div style="border-top:1px solid #E2E8F0;padding-top:12px">
+            <div style="font-size:12px;font-weight:700;color:#042C53;margin-bottom:8px">+ إضافة مستخدم جديد</div>
+            <div class="fgrid">
+              <div class="fg"><label>اسم المستخدم</label><input id="nu-username" placeholder="username"></div>
+              <div class="fg"><label>كلمة المرور</label><input id="nu-pass" type="password" placeholder="••••••"></div>
+              <div class="fg"><label>الاسم الكامل</label><input id="nu-name" placeholder="اسم الموظف"></div>
+              <div class="fg"><label>الدور</label>
+                <select id="nu-role">
+                  <option value="user">مستخدم عادي</option>
+                  <option value="superadmin">مدير النظام</option>
+                </select>
+              </div>
+              <div class="fg full"><label>الشركات المتاحة</label>
+                <select id="nu-corps" multiple style="height:70px"></select>
+              </div>
+            </div>
+            <button class="btn btn-p" onclick="addUser()">إضافة المستخدم</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- end content -->
+</div><!-- end main -->
+</div><!-- end app -->
+</div><!-- end screen-app -->
+
+<!-- ═══════════════════════════════════════
+     MODAL: شركة جديدة / تعديل
+═══════════════════════════════════════ -->
+<div id="modal-newcorp" onclick="if(event.target===this)closeNewCompanyModal()">
+<div class="newcorp-modal">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #E2E8F0">
+    <div style="font-size:15px;font-weight:700;color:#042C53" id="newcorp-modal-title">إنشاء شركة جديدة</div>
+    <button onclick="closeNewCompanyModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#94A3B8">✕</button>
+  </div>
+  <input type="hidden" id="nc-edit-id">
+  <div class="newcorp-logo-upload" onclick="document.getElementById('nc-logo-input').click()">
+    <div style="font-size:12px;color:#64748B;font-weight:600">اضغط لرفع شعار الشركة</div>
+    <div style="font-size:10px;color:#94A3B8;margin-top:3px">PNG/JPG — أقل من 500KB</div>
+    <input type="file" id="nc-logo-input" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
+    <input type="hidden" id="nc-logo-data">
+    <img id="nc-logo-preview" alt="logo">
+  </div>
+  <div class="fgrid">
+    <div class="fg"><label>اسم الشركة (إنجليزي)</label><input id="nc-name" placeholder="AL AMEEN"></div>
+    <div class="fg"><label>اسم الشركة (عربي)</label><input id="nc-name-ar" placeholder="الأمين"></div>
+    <div class="fg full"><label>العنوان</label><input id="nc-addr" placeholder="القاهرة، مصر"></div>
+    <div class="fg"><label>الهاتف</label><input id="nc-phone" placeholder="01x-xxxx-xxxx"></div>
+    <div class="fg"><label>البريد الإلكتروني</label><input id="nc-email" placeholder="info@company.com"></div>
+    <div class="fg"><label>الرقم الضريبي</label><input id="nc-tax" placeholder="رقم التسجيل الضريبي"></div>
+    <div class="fg"><label>نسبة الضريبة %</label><input id="nc-taxrate" type="number" value="14"></div>
+    <div class="fg"><label>العملة</label><input id="nc-currency" placeholder="ج.م"></div>
+    <div class="fg full"><label>ملاحظة الفاتورة</label><input id="nc-note" placeholder="شكراً لتعاملكم معنا"></div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button class="btn btn-p" onclick="saveNewCompany()">حفظ الشركة</button>
+    <button class="btn" onclick="closeNewCompanyModal()">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODALS: قيد / حساب / فاتورة / إلخ
+═══════════════════════════════════════ -->
+
+<!-- قيد -->
+<div id="modal-journal" class="overlay" onclick="if(event.target===this)closeModal('modal-journal')">
+<div class="modal" style="width:620px">
+  <div class="modal-h"><div class="modal-t" id="jm-t">قيد يومية جديد</div><button class="xbtn" onclick="closeModal('modal-journal')">✕</button></div>
+  <div class="fgrid" style="margin-bottom:10px">
+    <div class="fg"><label>التاريخ</label><input type="date" id="j-date"></div>
+    <div class="fg"><label>قالب سريع</label>
+      <select id="j-tpl" onchange="applyTpl()">
+        <option value="">— اختر قالباً —</option>
+        <optgroup label="مبيعات"><option value="sale_cash">بيع نقدي</option><option value="sale_bank">بيع بنكي</option><option value="sale_credit">بيع آجل</option><option value="sale_return">مردود مبيعات</option></optgroup>
+        <optgroup label="مشتريات"><option value="purch_cash">شراء نقدي</option><option value="purch_bank">شراء بنكي</option><option value="purch_credit">شراء آجل</option><option value="purch_return">مردود مشتريات</option></optgroup>
+        <optgroup label="تحصيل وسداد"><option value="collect_cash">تحصيل نقدي</option><option value="collect_bank">تحصيل بنكي</option><option value="pay_supp_cash">سداد لمورد نقدي</option><option value="pay_supp_bank">سداد لمورد بنكي</option></optgroup>
+        <optgroup label="مصروفات"><option value="salary">رواتب</option><option value="rent">إيجار</option><option value="utilities">كهرباء</option><option value="telecom">اتصالات</option><option value="depreciation">إهلاك</option><option value="expense_cash">مصروف نقدي</option><option value="expense_bank">مصروف بنكي</option></optgroup>
+        <optgroup label="بنك وصندوق"><option value="bank_deposit">إيداع في البنك</option><option value="bank_withdraw">سحب من البنك</option></optgroup>
+        <optgroup label="ضرائب وملكية"><option value="vat_pay">سداد ضريبة</option><option value="capital_inject">إضافة رأس مال</option><option value="owner_draw">سحب الشريك</option></optgroup>
+      </select>
+    </div>
+    <div class="fg full"><label>البيان</label><input id="j-desc" placeholder="وصف العملية..."></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 90px 90px 26px;gap:4px;padding:4px 7px;background:#F1F5F9;border-radius:7px;margin-bottom:7px;font-size:11px;font-weight:700;color:#64748B">
+    <span>الحساب</span><span style="color:#15803D;text-align:left">مدين Dr</span><span style="color:#DC2626;text-align:left">دائن Cr</span><span></span>
+  </div>
+  <div id="j-lines-wrap"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #E2E8F0">
+    <button class="btn" onclick="addJLine()" style="font-size:11px">+ سطر</button>
+    <div style="font-size:12px;display:flex;gap:13px;align-items:center">
+      <span>مدين: <b id="j-dr" style="color:#15803D">0</b></span>
+      <span>دائن: <b id="j-cr" style="color:#DC2626">0</b></span>
+      <b id="j-bal" style="font-size:13px"></b>
+    </div>
+  </div>
+  <div style="display:flex;gap:7px;margin-top:11px">
+    <button class="btn btn-p" id="j-btn" onclick="postJournal()">ترحيل القيد</button>
+    <button class="btn" onclick="closeModal('modal-journal')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- حساب -->
+<div id="modal-acc" class="overlay" onclick="if(event.target===this)closeModal('modal-acc')">
+<div class="modal" style="width:500px">
+  <div class="modal-h"><div class="modal-t" id="am-t">حساب جديد</div><button class="xbtn" onclick="closeModal('modal-acc')">✕</button></div>
+  <input type="hidden" id="a-eid">
+  <div class="fgrid">
+    <div class="fg"><label>كود الحساب (تلقائي إذا تُرك فارغاً)</label><input id="a-code" placeholder="مثال: 1-2-5"></div>
+    <div class="fg"><label>اسم الحساب</label><input id="a-name"></div>
+    <div class="fg"><label>المجموعة الرئيسية</label>
+      <select id="a-grp" onchange="updateSubOpts()">
+        <option value="1">1 — الأصول</option><option value="2">2 — الخصوم</option>
+        <option value="3">3 — حقوق الملكية</option><option value="4">4 — الإيرادات</option><option value="5">5 — المصروفات</option>
+      </select>
+    </div>
+    <div class="fg"><label>المجموعة الفرعية</label>
+      <select id="a-sub-sel" onchange="onSubSel(this.value)" style="margin-bottom:4px"></select>
+      <input id="a-sub" placeholder="أو اكتب مجموعة فرعية جديدة" style="margin-top:4px">
+    </div>
+    <div class="fg"><label>الطبيعة</label><select id="a-nat"><option value="Dr">مدين (Dr)</option><option value="Cr">دائن (Cr)</option></select></div>
+    <div class="fg"><label>الرصيد الافتتاحي (ج)</label><input id="a-bal" type="number" value="0"></div>
+  </div>
+  <div style="font-size:11px;color:#7C3AED;padding:5px 8px;background:#F3E8FF;border-radius:6px;margin-bottom:10px">الكود يتولد تلقائياً حسب موضع الحساب في الشجرة</div>
+  <div style="display:flex;gap:7px"><button class="btn btn-p" onclick="saveAcc()">حفظ</button><button class="btn" onclick="closeModal('modal-acc')">إلغاء</button></div>
+</div>
+</div>
+
+<!-- فاتورة مبيعات -->
+<div id="modal-inv" class="overlay" onclick="if(event.target===this)closeModal('modal-inv')">
+<div class="modal" style="width:580px">
+  <div class="modal-h"><div class="modal-t" id="im-t">فاتورة مبيعات جديدة</div><button class="xbtn" onclick="closeModal('modal-inv')">✕</button></div>
+  <input type="hidden" id="fi-eid">
+  <div class="fgrid">
+    <div class="fg"><label>العميل</label><select id="fi-cl"></select></div>
+    <div class="fg"><label>تاريخ الاستحقاق</label><input type="date" id="fi-due"></div>
+    <div class="fg"><label>طريقة الدفع</label>
+      <select id="fi-pay">
+        <option value="cash">نقدي — الصندوق</option>
+        <option value="bank">بنكي — البنك</option>
+        <option value="credit">آجل — يُضاف لحساب العميل</option>
+      </select>
+    </div>
+    <div class="fg"><label>نسبة الضريبة %</label><input id="fi-taxr" type="number" value="14" min="0"></div>
+  </div>
+  <table style="margin:8px 0">
+    <tr><th style="width:32%">المنتج/الخدمة</th><th style="width:12%">كمية</th><th style="width:16%">سعر</th><th style="width:16%">إجمالي</th><th style="width:14%">تكلفة</th><th style="width:10%"></th></tr>
+    <tbody id="fi-lines"></tbody>
+  </table>
+  <button class="btn" style="font-size:11px;margin-bottom:8px" onclick="addInvLine()">+ بند</button>
+  <div style="font-size:12px;display:flex;flex-wrap:wrap;gap:12px;padding:6px 0;border-top:1px solid #E2E8F0;font-weight:700">
+    <span>مبيعات: <span id="fi-sub">0</span></span>
+    <span>ضريبة: <span id="fi-taxamt">0</span></span>
+    <span>تكلفة: <span id="fi-cogs" style="color:#A16207">0</span></span>
+    <span style="color:#185FA5">الإجمالي: <span id="fi-tot">0</span> ج</span>
+  </div>
+  <div style="display:flex;gap:7px;margin-top:10px">
+    <button class="btn btn-p" onclick="saveInvoice()">حفظ وترحيل</button>
+    <button class="btn" onclick="closeModal('modal-inv')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- فاتورة مشتريات -->
+<div id="modal-purch" class="overlay" onclick="if(event.target===this)closeModal('modal-purch')">
+<div class="modal" style="width:500px">
+  <div class="modal-h"><div class="modal-t" id="pm-t">فاتورة شراء جديدة</div><button class="xbtn" onclick="closeModal('modal-purch')">✕</button></div>
+  <input type="hidden" id="po-eid">
+  <div class="fgrid">
+    <div class="fg"><label>المورد</label><select id="po-supp"></select></div>
+    <div class="fg"><label>المنتج</label><select id="po-prod"></select></div>
+    <div class="fg"><label>الكمية</label><input id="po-qty" type="number" value="1" min="1"></div>
+    <div class="fg"><label>سعر الوحدة (ج)</label><input id="po-price" type="number" value="0"></div>
+    <div class="fg"><label>التاريخ</label><input type="date" id="po-date"></div>
+    <div class="fg"><label>طريقة الدفع</label>
+      <select id="po-pay">
+        <option value="cash">نقدي — الصندوق</option>
+        <option value="bank">بنكي — البنك</option>
+        <option value="credit">آجل — يُضاف لحساب المورد</option>
+      </select>
+    </div>
+  </div>
+  <div style="display:flex;gap:7px;margin-top:11px">
+    <button class="btn btn-p" onclick="savePurch()">حفظ وترحيل</button>
+    <button class="btn" onclick="closeModal('modal-purch')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- عميل -->
+<div id="modal-client" class="overlay" onclick="if(event.target===this)closeModal('modal-client')">
+<div class="modal" style="width:480px">
+  <div class="modal-h"><div class="modal-t" id="clm-t">عميل جديد</div><button class="xbtn" onclick="closeModal('modal-client')">✕</button></div>
+  <input type="hidden" id="cl-eid">
+  <div class="fgrid">
+    <div class="fg full"><label>اسم العميل / الشركة</label><input id="cl-name"></div>
+    <div class="fg"><label>الهاتف</label><input id="cl-phone"></div>
+    <div class="fg"><label>البريد</label><input id="cl-email"></div>
+    <div class="fg full"><label>العنوان</label><input id="cl-addr"></div>
+    <div class="fg"><label>رصيد افتتاحي مستحق (ج)</label><input id="cl-bal" type="number" value="0"></div>
+  </div>
+  <div style="font-size:11px;color:#7C3AED;padding:5px 8px;background:#F3E8FF;border-radius:6px;margin:5px 0">سيتم إنشاء حساب فرعي تلقائياً تحت حسابات القبض</div>
+  <div style="display:flex;gap:7px;margin-top:10px"><button class="btn btn-p" onclick="saveClient()">حفظ</button><button class="btn" onclick="closeModal('modal-client')">إلغاء</button></div>
+</div>
+</div>
+
+<!-- مورد -->
+<div id="modal-supp" class="overlay" onclick="if(event.target===this)closeModal('modal-supp')">
+<div class="modal" style="width:480px">
+  <div class="modal-h"><div class="modal-t" id="spm-t">مورد جديد</div><button class="xbtn" onclick="closeModal('modal-supp')">✕</button></div>
+  <input type="hidden" id="sp-eid">
+  <div class="fgrid">
+    <div class="fg full"><label>اسم المورد / الشركة</label><input id="sp-name"></div>
+    <div class="fg"><label>الهاتف</label><input id="sp-phone"></div>
+    <div class="fg"><label>التخصص</label><input id="sp-cat"></div>
+    <div class="fg"><label>رصيد افتتاحي مستحق (ج)</label><input id="sp-bal" type="number" value="0"></div>
+  </div>
+  <div style="font-size:11px;color:#A16207;padding:5px 8px;background:#FEF9C3;border-radius:6px;margin:5px 0">سيتم إنشاء حساب فرعي تلقائياً تحت حسابات الدفع</div>
+  <div style="display:flex;gap:7px;margin-top:10px"><button class="btn btn-p" onclick="saveSupplier()">حفظ</button><button class="btn" onclick="closeModal('modal-supp')">إلغاء</button></div>
+</div>
+</div>
+
+<!-- منتج -->
+<div id="modal-product" class="overlay" onclick="if(event.target===this)closeModal('modal-product')">
+<div class="modal" style="width:480px">
+  <div class="modal-h"><div class="modal-t" id="prm-t">منتج جديد</div><button class="xbtn" onclick="closeModal('modal-product')">✕</button></div>
+  <input type="hidden" id="pr-eid">
+  <div class="fgrid">
+    <div class="fg full"><label>الاسم</label><input id="pr-name"></div>
+    <div class="fg"><label>الفئة</label><input id="pr-cat"></div>
+    <div class="fg"><label>وحدة القياس</label><input id="pr-unit" placeholder="قطعة/كجم/ساعة"></div>
+    <div class="fg"><label>الكمية</label><input id="pr-qty" type="number" value="0"></div>
+    <div class="fg"><label>الحد الأدنى</label><input id="pr-min" type="number" value="0"></div>
+    <div class="fg"><label>سعر التكلفة (ج)</label><input id="pr-cost" type="number" value="0"></div>
+    <div class="fg"><label>سعر البيع (ج)</label><input id="pr-price" type="number" value="0"></div>
+  </div>
+  <div style="display:flex;gap:7px;margin-top:11px"><button class="btn btn-p" onclick="saveProduct()">حفظ</button><button class="btn" onclick="closeModal('modal-product')">إلغاء</button></div>
+</div>
+</div>
+
+<!-- تأكيد حذف -->
+<div id="modal-confirm" class="overlay">
+<div class="modal" style="width:360px">
+  <div class="modal-h"><div class="modal-t" style="color:#DC2626">تأكيد الحذف</div></div>
+  <div id="confirm-msg" style="font-size:13px;color:#64748B;margin-bottom:16px"></div>
+  <div style="display:flex;gap:7px">
+    <button class="btn btn-del" style="padding:7px 16px;font-size:12px" id="confirm-yes">نعم، احذف</button>
+    <button class="btn" onclick="closeModal('modal-confirm')">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ شريط تثبيت PWA ═══ -->
+<div id="pwa-install-bar">
+  <span>📲 ثبّت AL AMEEN ERP كتطبيق على جهازك</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="pwa-install-btn" id="pwa-install-btn">تثبيت الآن</button>
+    <button class="pwa-dismiss-btn" onclick="document.getElementById('pwa-install-bar').classList.remove('show')">✕</button>
+  </div>
+</div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script src="sync.js"></script>
+<script src="logo.js"></script>
+<script src="data.js"></script>
+<script src="auth.js"></script>
+<script src="coa.js"></script>
+<script src="reports.js"></script>
+<script src="transactions.js"></script>
+<script src="app.js"></script>
+
+<script>
+// ── مساعدات UI ──
+function updateSubOpts(){
+  const gid=parseInt(document.getElementById('a-grp').value);
+  const subs=[...new Set(DB.accounts.filter(a=>a.gid===gid&&!a.isClientSub&&!a.isSupplierSub).map(a=>a.sub))].sort();
+  const sel=document.getElementById('a-sub-sel');
+  sel.innerHTML='<option value="">— اختر مجموعة موجودة —</option>'+subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+}
+function onSubSel(val){if(val)document.getElementById('a-sub').value=val;}
+const _origOpenAcc=openAccModal;
+openAccModal=function(editId=null){_origOpenAcc(editId);setTimeout(updateSubOpts,50);};
+
+// ── شاشة الإدارة من صفحة الشركات ──
+function showAdminFromCompanyScreen(){
+  document.getElementById('screen-company').style.display='none';
+  document.getElementById('screen-app').style.display='flex';
+  // تشغيل تطبيق وهمي بدون شركة لعرض الإدارة
+  if(!SYSTEM.currentCompany&&SYSTEM.companies.length>0){
+    SYSTEM.currentCompany=SYSTEM.companies[0];
+    loadCompanyData(getCompanyStoreKey(),SYSTEM.currentCompany);
+  }
+  initApp();
+  setTimeout(()=>go('admin',document.querySelector('.ni.admin-only')),100);
+}
+
+// ── تحديث مؤشرات الشركة في شاشة الاختيار ──
+const _origShowCS=showCompanySelect;
+showCompanySelect=function(){
+  _origShowCS();
+  const u=SYSTEM.currentUser;
+  if(u?.role==='superadmin'){
+    const nb=document.getElementById('admin-new-corp-btn');if(nb)nb.style.display='';
+    const ap=document.getElementById('admin-panel-btn');if(ap)ap.style.display='';
+  }
+  // لوجو في شاشة اختيار الشركة
+  const logo=typeof LOGO_SRC!=='undefined'?LOGO_SRC:'';
+  const cl=document.getElementById('comp-screen-logo');
+  if(cl&&logo){cl.src=logo;cl.style.display='block';}
+};
+
+// ── تحديث اسم الشركة في البانر ──
+const _origInitApp=initApp;
+initApp=function(){
+  _origInitApp();
+  const cn=document.getElementById('dash-corp-name');
+  if(cn)cn.textContent=SYSTEM.currentCompany?.nameAr||SYSTEM.currentCompany?.name||'AL AMEEN ERP';
+};
+
+// ══════════════════════════════════════════
+// PWA — Service Worker + Install + Offline
+// ══════════════════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(r=>console.log('SW:',r.scope))
+      .catch(e=>console.warn('SW fail:',e));
+  });
+}
+let _dp=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();_dp=e;
+  const bar=document.getElementById('pwa-install-bar');
+  if(bar)bar.classList.add('show');
+});
+document.getElementById('pwa-install-btn')?.addEventListener('click',()=>{
+  if(!_dp)return;
+  _dp.prompt();
+  _dp.userChoice.then(r=>{
+    if(r.outcome==='accepted')document.getElementById('pwa-install-bar').classList.remove('show');
+    _dp=null;
+  });
+});
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('pwa-install-bar').classList.remove('show');_dp=null;
+});
+function updateOnline(){
+  const b=document.querySelector('.offline-badge');
+  if(b)b.classList.toggle('show',!navigator.onLine);
+}
+window.addEventListener('online',updateOnline);
+window.addEventListener('offline',updateOnline);
+setTimeout(updateOnline,500);
+window.addEventListener('beforeunload',()=>{
+  if(window.matchMedia('(display-mode: standalone)').matches&&SYSTEM.currentCompany&&typeof save==='function')save();
+});
+</script>
+
+</body>
+</html>

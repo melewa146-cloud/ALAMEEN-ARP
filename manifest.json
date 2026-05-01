@@ -1,0 +1,66 @@
+{
+  "name": "AL AMEEN ERP — نظام الأمين المحاسبي",
+  "short_name": "AL AMEEN ERP",
+  "description": "نظام محاسبي متكامل متعدد الشركات",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#042C53",
+  "theme_color": "#042C53",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "فاتورة جديدة",
+      "short_name": "فاتورة",
+      "url": "./index.html#invoice",
+      "description": "إنشاء فاتورة مبيعات جديدة"
+    },
+    {
+      "name": "قيد يومية",
+      "short_name": "قيد",
+      "url": "./index.html#journal",
+      "description": "إدخال قيد محاسبي"
+    }
+  ]
+}

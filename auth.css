@@ -1,0 +1,130 @@
+/* AL AMEEN ERP — auth.css | Login + Company Select */
+
+/* ── شاشة تسجيل الدخول ── */
+#screen-login {
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; background:linear-gradient(135deg,#042C53 0%,#185FA5 60%,#378ADD 100%);
+  position:fixed; inset:0; z-index:1000;
+}
+.login-box {
+  background:#fff; border-radius:16px; padding:36px 40px; width:380px;
+  box-shadow:0 24px 64px rgba(0,0,0,.3); text-align:center;
+}
+.login-logo { width:80px; height:80px; object-fit:contain; border-radius:12px; margin-bottom:12px; }
+.login-logo-placeholder {
+  width:80px; height:80px; border-radius:12px; background:#EFF6FF;
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px; font-weight:700; color:#185FA5; margin:0 auto 12px;
+}
+.login-title  { font-size:22px; font-weight:700; color:#042C53; margin-bottom:4px; }
+.login-sub    { font-size:11px; color:#94A3B8; margin-bottom:24px; letter-spacing:.06em; }
+.login-field  { margin-bottom:14px; text-align:right; }
+.login-field label { display:block; font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px; }
+.login-field input {
+  width:100%; padding:10px 13px; border:1px solid #CBD5E1; border-radius:8px;
+  font-size:14px; color:#1E293B; background:#fff; transition:border .12s; font-family:inherit;
+}
+.login-field input:focus { outline:none; border-color:#185FA5; box-shadow:0 0 0 3px rgba(24,95,165,.1); }
+.login-btn {
+  width:100%; padding:11px; background:#185FA5; color:#fff; border:none;
+  border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; margin-top:4px;
+  font-family:inherit; transition:background .12s;
+}
+.login-btn:hover { background:#0C447C; }
+.login-err {
+  display:none; background:#FEE2E2; color:#DC2626; padding:8px 12px;
+  border-radius:7px; font-size:12px; font-weight:600; margin-bottom:12px; border:1px solid #FECACA;
+}
+.login-footer { font-size:10px; color:#CBD5E1; margin-top:20px; }
+
+/* ── شاشة اختيار الشركة ── */
+#screen-company {
+  display:none; align-items:flex-start; justify-content:center;
+  min-height:100vh; background:linear-gradient(135deg,#042C53 0%,#0C447C 100%);
+  position:fixed; inset:0; z-index:1000; padding:40px 20px; overflow-y:auto;
+}
+.company-screen-wrap { width:100%; max-width:600px; }
+.company-screen-header {
+  text-align:center; margin-bottom:28px;
+}
+.company-screen-header img {
+  width:70px; height:70px; object-fit:contain; background:#fff;
+  border-radius:12px; padding:6px; margin-bottom:12px;
+}
+#company-welcome { font-size:20px; font-weight:700; color:#fff; display:block; }
+.company-screen-sub { font-size:12px; color:#85B7EB; margin-top:4px; }
+.company-list-title {
+  color:#85B7EB; font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.07em; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;
+}
+.company-card {
+  background:#fff; border-radius:12px; padding:16px 18px; margin-bottom:10px;
+  display:flex; align-items:center; gap:14px; cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.15); transition:all .15s;
+}
+.company-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.2); }
+.company-card-logo {
+  width:52px; height:52px; flex-shrink:0; border-radius:10px;
+  overflow:hidden; border:1px solid #E2E8F0; display:flex; align-items:center; justify-content:center;
+}
+.company-card-logo img { width:100%; height:100%; object-fit:contain; }
+.company-card-initials {
+  width:52px; height:52px; border-radius:10px; background:#EFF6FF;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:700; color:#185FA5;
+}
+.company-card-info { flex:1 }
+.company-card-name   { font-size:16px; font-weight:700; color:#1E293B; }
+.company-card-sub    { font-size:11px; color:#64748B; margin-top:2px; }
+.company-card-detail { font-size:10px; color:#94A3B8; margin-top:2px; }
+.company-card-arrow  { color:#CBD5E1; font-size:18px; }
+.company-actions {
+  display:flex; gap:8px; margin-top:16px; justify-content:center; flex-wrap:wrap;
+}
+.logout-btn {
+  padding:8px 18px; background:rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.2);
+  border-radius:8px; cursor:pointer; font-size:12px; font-family:inherit; transition:background .12s;
+}
+.logout-btn:hover { background:rgba(255,255,255,.2); }
+
+/* ── modal إنشاء شركة ── */
+#modal-newcorp {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.6);
+  z-index:2000; align-items:center; justify-content:center;
+}
+.newcorp-modal {
+  background:#fff; border-radius:14px; padding:22px; width:580px;
+  max-height:88vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,.3);
+}
+.newcorp-logo-upload {
+  border:2px dashed #CBD5E1; border-radius:10px; padding:14px; text-align:center;
+  cursor:pointer; transition:border .12s; margin-bottom:10px;
+}
+.newcorp-logo-upload:hover { border-color:#185FA5; background:#EFF6FF; }
+#nc-logo-preview { width:80px; height:80px; object-fit:contain; border-radius:8px; margin:8px auto 0; display:none; }
+
+/* ── إدارة المستخدمين ── */
+.admin-panel-wrap { padding:20px; max-width:900px; margin:0 auto; }
+.admin-tabs { display:flex; gap:8px; margin-bottom:16px; }
+.admin-tab {
+  padding:7px 16px; border-radius:7px; cursor:pointer; font-size:13px; font-weight:600;
+  border:1px solid #E2E8F0; background:#fff; color:#374151; transition:all .12s;
+}
+.admin-tab.on { background:#185FA5; color:#fff; border-color:#185FA5; }
+
+/* ── toast عام ── */
+#global-toast {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  background:#15803D; color:#fff; padding:9px 18px; border-radius:8px;
+  font-size:12px; font-weight:700; z-index:9999; opacity:0;
+  transition:opacity .3s; white-space:nowrap; pointer-events:none;
+}
+
+/* ── مؤشر الشركة في التوبار ── */
+.corp-indicator {
+  display:flex; align-items:center; gap:7px; padding:4px 10px;
+  background:#EFF6FF; border-radius:7px; border:1px solid #BFDBFE; cursor:pointer;
+}
+.corp-indicator img { width:22px; height:22px; object-fit:contain; border-radius:4px; }
+.corp-indicator-name { font-size:11px; font-weight:700; color:#1D4ED8; max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.corp-switch-btn { font-size:10px; color:#64748B; }
