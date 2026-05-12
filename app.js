@@ -172,7 +172,8 @@ function openModal(id) {
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 function toast(msg, type = '') {
-  const t = document.getElementById('toast');
+  const t = document.getElementById('global-toast') || document.getElementById('toast');
+if(!t){console.warn('toast:',msg);return;}
   t.textContent = msg; t.className = 'toast show ' + type;
   setTimeout(() => t.className = 'toast', 3200);
 }
